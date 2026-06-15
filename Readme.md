@@ -1,3 +1,4 @@
+# Walmart_Forecasting
 Walmart Revenue Forecasting and Profitability Optimization
 
 This project builds a complete revenue forecasting and profitability system using SQL, Python, and Power BI. It predicts weekly sales for 45 Walmart stores, evaluates markdown and holiday effects, and measures model accuracy across Prophet, ARIMA, and XGBoost. The system includes SQL-based preprocessing, feature engineering, multi model training, scenario testing, and a full business dashboard.
@@ -117,4 +118,4 @@ Walmart-Revenue-Forecasting/
 ├── dashboard/
 ├── reports/
 └── README.md
-# Walmart_Forecasting
+

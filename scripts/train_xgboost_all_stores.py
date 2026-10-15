@@ -1,27 +1,16 @@
+"""Out-of-sample XGBoost forecast of the last HOLDOUT weeks per store (store-week grain)."""
 import pandas as pd
-from xgboost import XGBRegressor
-import os
+from holdout_evaluation import DATA_PATH, EXOG, HOLDOUT, load_store_weeks, xgb_forecast
 
-df = pd.read_csv("data/walmart_prepared.csv")
-stores = df["Store"].unique()
+wk = load_store_weeks(DATA_PATH)
 
-features = [
-    "Lag_1","Lag_2","Lag_4","Lag_12",
-    "Rolling_4w","Rolling_12w",
-    "CPI","Fuel_Price","Unemployment","IsHoliday"
-]
+for store_id, g in wk.groupby("Store"):
+    g = g.reset_index(drop=True)
+    n_train = len(g) - HOLDOUT
+    y = g["Revenue"].to_numpy(dtype=float)
+    exog = g[EXOG].to_numpy(dtype=float)
 
-for store_id in stores:
-    s = df[df["Store"] == store_id].dropna(subset=features)
-
-    X = s[features]
-    y = s["Revenue"]
-
-    model = XGBRegressor()
-    model.fit(X, y)
-
-    s["xgb_pred"] = model.predict(X)
+    pred = xgb_forecast(y[:n_train], exog[:n_train], exog[n_train:])
     out = f"data/xgb_store_{store_id}.csv"
-    s[["Date","Store","xgb_pred"]].to_csv(out, index=False)
-
+    pd.DataFrame({"Date": g["Date"][n_train:], "Store": store_id, "xgb_pred": pred}).to_csv(out, index=False)
     print("Saved", out)

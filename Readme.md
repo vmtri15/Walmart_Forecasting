@@ -8,9 +8,12 @@ Help finance and operations teams plan inventory, adjust pricing, and understand
 
 Key Results
 
-• XGBoost achieved the best accuracy for 42 of 45 stores.
-• Prophet performed best for three stores with heavy seasonal behavior.
-• ARIMA did not outperform the other models.
+Evaluated on a time based holdout (last 12 weeks per store, models fit on earlier weeks only, features built from past weeks only). See scripts/holdout_evaluation.py and data/holdout_summary.csv.
+
+• Prophet was best for 30 of 45 stores, ARIMA for 11, XGBoost for 4.
+• Mean MAPE: Prophet 4.4%, ARIMA 5.3%, XGBoost 8.0%, seasonal naive (same week last year) 5.5%.
+• Prophet beats the seasonal naive baseline in 30 of 45 stores, ARIMA in 21, XGBoost in 13.
+• An earlier version scored models on their own training data and reported XGBoost as best for 42 stores. That result was caused by in-sample scoring and by rolling features that included the week being predicted, and has been removed.
 • SQL preprocessing reduced Python cleaning time by removing repeated data steps.
 • Power BI delivered interactive forecasting with price and markdown sliders.
 
@@ -83,7 +86,7 @@ Each model was trained per store. Predictions were saved into the data folder fo
 
 Model Selection Engine
 
-A selection engine evaluates the accuracy of each model using MAPE. The engine identifies the best model for each store. Results are exported to a summary file used in Power BI.
+scripts/holdout_evaluation.py scores each model with MAPE on the held out weeks and picks the best model per store. Results go to data/holdout_summary.csv for Power BI.
 
 Scenario Simulation
 

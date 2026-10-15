@@ -15,15 +15,14 @@ df["Revenue"] = df["Weekly_Sales"]
 df["Profit"] = df["Revenue"] * 0.12           # simple placeholder profit
 df["Margin"] = df["Profit"] / df["Revenue"]
 
-# Lag features
-df["Lag_1"] = df["Revenue"].shift(1)
-df["Lag_2"] = df["Revenue"].shift(2)
-df["Lag_4"] = df["Revenue"].shift(4)
-df["Lag_12"] = df["Revenue"].shift(12)
-
-# Rolling features
-df["Rolling_4w"] = df["Revenue"].rolling(window=4).mean()
-df["Rolling_12w"] = df["Revenue"].rolling(window=12).mean()
+# Lag and rolling features, built per Store/Dept series and using past weeks only
+df = df.sort_values(["Store", "Dept", "Date"]).reset_index(drop=True)
+g = df.groupby(["Store", "Dept"])["Revenue"]
+for k in (1, 2, 4, 12):
+    df[f"Lag_{k}"] = g.shift(k)
+# shift(1) first so the window excludes the week being predicted
+df["Rolling_4w"] = g.transform(lambda s: s.shift(1).rolling(4).mean())
+df["Rolling_12w"] = g.transform(lambda s: s.shift(1).rolling(12).mean())
 
 # Seasonal features
 df["Year"] = df["Date"].dt.year

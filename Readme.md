@@ -44,6 +44,13 @@ Source: Kaggle Walmart Store Sales
 Records: More than 600k weekly observations
 Fields included revenue, holiday flags, fuel price, consumer price index, unemployment, markdown activity, temperature, store type, and size.
 
+Reproduce
+
+Download train.csv, features.csv and stores.csv from the Kaggle competition "Walmart Recruiting - Store Sales Forecasting" into data/raw/, then run:
+
+    pip install -r requirements.txt
+    bash run_all.sh
+
 SQL Pipeline
 
 The SQL pipeline loads the raw CSV into a database. SQL views handle aggregation and preparation before Python completes the model steps. The SQL folder contains the full set of queries.

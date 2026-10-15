@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
+
+# raw Kaggle download and rebuildable intermediates
+data/raw/
+data/walmart_cleaned.csv
+data/walmart_prepared.csv

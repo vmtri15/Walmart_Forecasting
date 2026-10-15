@@ -82,7 +82,7 @@ Works on smooth data. Struggles with heavy noise. Included for comparison.
 XGBoost
 Uses engineered features and external variables. Handles nonlinear patterns well. Performs best across almost all stores.
 
-Each model was trained per store. Predictions were saved into the data folder for Power BI integration.
+Each model is trained per store on store-week revenue. scripts/holdout_evaluation.py writes actual vs predicted holdout weeks for all models to data/holdout_predictions.csv for Power BI.
 
 Model Selection Engine
 

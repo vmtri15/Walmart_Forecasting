@@ -16,6 +16,7 @@ This script fixes both:
 Run from the project root:
     python scripts/holdout_evaluation.py
 Output:
+    data/holdout_predictions.csv  (actual vs each model, last HOLDOUT weeks per store)
     data/holdout_summary.csv   (does not overwrite model_selection_summary.csv)
 """
 import sys
@@ -104,7 +105,7 @@ def seasonal_naive(y_all, n_train, steps):
 
 def main():
     wk = load_store_weeks(DATA_PATH)
-    rows = []
+    rows, preds = [], []
     for store, g in wk.groupby("Store"):
         g = g.reset_index(drop=True)
         n = len(g)
@@ -119,6 +120,7 @@ def main():
         y_train, y_test = y[:n_train], y[n_train:]
 
         res = {"Store": store}
+        pred = pd.DataFrame({"Store": store, "Date": dates[n_train:].to_numpy(), "Actual": y_test})
         for name, fn in [
             ("Prophet", lambda: prophet_forecast(dates[:n_train], y_train, dates[n_train:])),
             ("ARIMA", lambda: arima_forecast(y_train, HOLDOUT)),
@@ -126,7 +128,8 @@ def main():
             ("SeasonalNaive", lambda: seasonal_naive(y, n_train, HOLDOUT)),
         ]:
             try:
-                res[f"{name}_MAPE"] = mape(y_test, fn())
+                pred[name] = fn()
+                res[f"{name}_MAPE"] = mape(y_test, pred[name])
             except Exception as e:
                 print(f"Store {store}: {name} failed ({type(e).__name__})")
                 res[f"{name}_MAPE"] = np.nan
@@ -135,6 +138,7 @@ def main():
         cands = {k: v for k, v in cands.items() if not np.isnan(v)}
         res["Best_Model"] = min(cands, key=cands.get) if cands else None
         rows.append(res)
+        preds.append(pred)
         print(
             f"Store {store}: Prophet {res['Prophet_MAPE']:.3f}  ARIMA {res['ARIMA_MAPE']:.3f}  "
             f"XGB {res['XGB_MAPE']:.3f}  Naive {res['SeasonalNaive_MAPE']:.3f}  -> {res['Best_Model']}"
@@ -142,6 +146,8 @@ def main():
 
     out = pd.DataFrame(rows)
     out.to_csv(OUT_PATH, index=False)
+    # one long file of actual vs predicted holdout weeks, for Power BI
+    pd.concat(preds).to_csv(OUT_PATH.replace("summary", "predictions"), index=False)
 
     print("\n=== Holdout summary (last %d weeks per store) ===" % HOLDOUT)
     print("Stores evaluated:", len(out))

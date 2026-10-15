@@ -12,8 +12,6 @@ df["Date"] = pd.to_datetime(df["Date"])
 
 # Basic financial features
 df["Revenue"] = df["Weekly_Sales"]
-df["Profit"] = df["Revenue"] * 0.12           # simple placeholder profit
-df["Margin"] = df["Profit"] / df["Revenue"]
 
 # Lag and rolling features, built per Store/Dept series and using past weeks only
 df = df.sort_values(["Store", "Dept", "Date"]).reset_index(drop=True)

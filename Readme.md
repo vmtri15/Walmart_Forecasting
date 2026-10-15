@@ -1,10 +1,10 @@
-Walmart Revenue Forecasting and Profitability Optimization
+Walmart Revenue Forecasting
 
-This project builds a complete revenue forecasting and profitability system using SQL, Python, and Power BI. It predicts weekly sales for 45 Walmart stores, evaluates markdown and holiday effects, and measures model accuracy across Prophet, ARIMA, and XGBoost. The system includes SQL-based preprocessing, feature engineering, multi model training, scenario testing, and a full business dashboard.
+This project forecasts weekly revenue for 45 Walmart stores using SQL and Python. It compares Prophet, ARIMA, and XGBoost on a time based holdout, produces a 52 week forecast with prediction intervals, and estimates how revenue responds to markdown spend. A Power BI dashboard is planned and not yet built.
 
 Project Goal
 
-Help finance and operations teams plan inventory, adjust pricing, and understand how economic factors influence store performance. Forecasts support margin planning and provide a forward view of store health. Managers can compare models, test price adjustments, and review promotional return on investment.
+Help finance and operations teams plan inventory and staffing with a forward view of store revenue and an honest range of uncertainty. Analysts can compare models per store and see whether markdown size moves revenue.
 
 Key Results
 
@@ -14,8 +14,8 @@ Evaluated on a time based holdout (last 12 weeks per store, models fit on earlie
 • Mean MAPE: Prophet 4.4%, ARIMA 5.3%, XGBoost 8.0%, seasonal naive (same week last year) 5.5%.
 • Prophet beats the seasonal naive baseline in 30 of 45 stores, ARIMA in 21, XGBoost in 13.
 • An earlier version scored models on their own training data and reported XGBoost as best for 42 stores. That result was caused by in-sample scoring and by rolling features that included the week being predicted, and has been removed.
-• SQL preprocessing reduced Python cleaning time by removing repeated data steps.
-• Power BI delivered interactive forecasting with price and markdown sliders.
+• The SQL views in sql/ build lag and rolling features at store level.
+• Power BI dashboard: planned, not built yet.
 
 Technologies Used
 
@@ -30,10 +30,10 @@ Prophet
 Statsmodels
 XGBoost
 
-Python handled feature engineering, lag creation, rolling values, model training, evaluation, and scenario testing.
+Python handled feature engineering, lag creation, rolling values, model training, evaluation, forecasting, and the markdown what-if.
 
 Power BI
-Power BI visualized forecasts, model performance, economic influences, and price simulations.
+Power BI is planned for forecasts, model performance, and the markdown what-if. No dashboard file exists yet.
 
 Version Control
 Git and GitHub organized notebooks, scripts, and dashboard artifacts.
@@ -41,7 +41,7 @@ Git and GitHub organized notebooks, scripts, and dashboard artifacts.
 Dataset
 
 Source: Kaggle Walmart Store Sales
-Records: More than 600k weekly observations
+Records: 421,570 weekly store and department observations (Feb 2010 to Oct 2012)
 Fields included revenue, holiday flags, fuel price, consumer price index, unemployment, markdown activity, temperature, store type, and size.
 
 Reproduce
@@ -74,7 +74,7 @@ Feature Engineering
 Python adds additional features that strengthen forecasting performance.
 Features include Lag_1, Lag_2, Lag_4, Lag_12, Rolling_4w, Rolling_12w, seasonal fields, and holiday flags. Economic fields help capture external effects.
 
-Feature engineering improves model accuracy for all three models and supports scenario simulations.
+Feature engineering uses past weeks only (no leakage) and feeds the XGBoost model.
 
 Model Training
 
@@ -101,15 +101,15 @@ scripts/forecast_future.py fits Prophet on each store and writes a 52 week forec
 
 Markdown Elasticity
 
-The dataset has no prices, so price elasticity cannot be estimated. scripts/markdown_elasticity.py instead estimates how weekly store revenue responds to markdown spend (Nov 2011 to Oct 2012, store and week fixed effects). The estimate is 0.008 with a 95% interval of -0.001 to 0.017, so there is no detectable effect of markdown size on revenue. The scenario simulator below still uses a fixed 12% profit rate and a simple revenue multiplier, and is not backed by an elasticity.
+The dataset has no prices, so price elasticity cannot be estimated. scripts/markdown_elasticity.py instead estimates how weekly store revenue responds to markdown spend (Nov 2011 to Oct 2012, store and week fixed effects). The estimate is 0.008 with a 95% interval of -0.001 to 0.017, so there is no detectable effect of markdown size on revenue.
 
-Scenario Simulation
+Markdown What-If
 
-A Python script builds price and markdown simulations. Users can test two percent or three percent changes and see the effect on revenue and margin. Power BI includes interactive sliders linked to these results.
+scripts/scenario_simulator.py applies the elasticity and its 95% interval to the 52 week forecast for markdowns 30% lower or higher. The result is within about 1% of baseline in both directions, consistent with no detectable effect. Profit and margin are not modeled because the dataset has no cost data.
 
 Power BI Dashboard
 
-The dashboard includes:
+The planned dashboard will include:
 
 • Actual vs forecast lines
 • Store filter
@@ -119,11 +119,11 @@ The dashboard includes:
 • Scenario simulator
 • Best model selection table
 
-Managers can review store health, project margin expectations, and test price ideas with immediate feedback.
+Managers will be able to review store forecasts with ranges and compare models per store.
 
 Business Impact
 
-The system gives Walmart style decision support for planning and pricing. Analysts can compare stores, understand economic sensitivity, and measure promotional return. Dynamic forecasting helps reduce overstock, improve timing of markdowns, and raise margin stability.
+Analysts can compare models by store, see how uncertain the forecast is, and check whether markdown spend is associated with revenue.
 
 Repository Structure
 Walmart-Revenue-Forecasting/

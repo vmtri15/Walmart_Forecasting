@@ -1,17 +1,34 @@
+"""Markdown what-if on top of the 52 week forecast.
+
+Uses the elasticity from markdown_elasticity.py (log-log, so a markdown change of p moves revenue by
+elasticity * ln(1 + p)). The 95% interval of the elasticity gives a low and high case. Because that
+interval includes 0, expect the low and high cases to straddle the baseline.
+
+Run from the project root:
+    python scripts/scenario_simulator.py
+Output:
+    data/scenario_markdown.csv
+"""
+import numpy as np
 import pandas as pd
 
-df = pd.read_csv("data/walmart_prepared.csv")
+SCENARIOS = {"markdown_minus30": -0.30, "markdown_plus30": 0.30}
 
-def simulate(df, price_change):
-    d = df.copy()
-    d["Adj_Revenue"] = d["Revenue"] * (1 + price_change)
-    d["Adj_Profit"] = d["Adj_Revenue"] * 0.12
-    d["Adj_Margin"] = d["Adj_Profit"] / d["Adj_Revenue"]
-    return d
+base = pd.read_csv("data/forecast_future.csv")
+el = pd.read_csv("data/markdown_elasticity.csv").iloc[0]
 
-minus3 = simulate(df, -0.03)
-plus2 = simulate(df, 0.02)
-minus3.to_csv("data/scenario_minus3.csv", index=False)
-plus2.to_csv("data/scenario_plus2.csv", index=False)
+rows = []
+for name, pct in SCENARIOS.items():
+    shift = np.log1p(pct)
+    d = base[["Store", "Date", "Forecast"]].copy()
+    d["Scenario"] = name
+    d["Revenue_Low"] = d["Forecast"] * np.exp(el["CI95_Low"] * shift)
+    d["Revenue_Mid"] = d["Forecast"] * np.exp(el["Elasticity"] * shift)
+    d["Revenue_High"] = d["Forecast"] * np.exp(el["CI95_High"] * shift)
+    rows.append(d)
 
-print("Scenarios saved")
+out = pd.concat(rows)
+out.to_csv("data/scenario_markdown.csv", index=False)
+for name, g in out.groupby("Scenario"):
+    t = g["Forecast"].sum()
+    print(f"{name}: revenue {g['Revenue_Low'].sum() / t - 1:+.2%} to {g['Revenue_High'].sum() / t - 1:+.2%} vs baseline")

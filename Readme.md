@@ -95,6 +95,10 @@ Model Selection Engine
 
 scripts/holdout_evaluation.py scores each model with MAPE on the held out weeks and picks the best model per store. Results go to data/holdout_summary.csv for Power BI.
 
+Future Forecast
+
+scripts/forecast_future.py fits Prophet on each store and writes a 52 week forecast with 80% prediction intervals to data/forecast_future.csv. On the 12 held out weeks the 80% interval contained 92% of actual values, so the intervals are somewhat wide. The holdout does not include a peak holiday season, so coverage there is untested.
+
 Scenario Simulation
 
 A Python script builds price and markdown simulations. Users can test two percent or three percent changes and see the effect on revenue and margin. Power BI includes interactive sliders linked to these results.

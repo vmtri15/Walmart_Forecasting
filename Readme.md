@@ -99,6 +99,10 @@ Future Forecast
 
 scripts/forecast_future.py fits Prophet on each store and writes a 52 week forecast with 80% prediction intervals to data/forecast_future.csv. On the 12 held out weeks the 80% interval contained 92% of actual values, so the intervals are somewhat wide. The holdout does not include a peak holiday season, so coverage there is untested.
 
+Markdown Elasticity
+
+The dataset has no prices, so price elasticity cannot be estimated. scripts/markdown_elasticity.py instead estimates how weekly store revenue responds to markdown spend (Nov 2011 to Oct 2012, store and week fixed effects). The estimate is 0.008 with a 95% interval of -0.001 to 0.017, so there is no detectable effect of markdown size on revenue. The scenario simulator below still uses a fixed 12% profit rate and a simple revenue multiplier, and is not backed by an elasticity.
+
 Scenario Simulation
 
 A Python script builds price and markdown simulations. Users can test two percent or three percent changes and see the effect on revenue and margin. Power BI includes interactive sliders linked to these results.

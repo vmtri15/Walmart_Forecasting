@@ -1,137 +1,64 @@
 # Walmart Revenue Forecasting
 
-This project forecasts weekly revenue for 45 Walmart stores using SQL and Python. It compares Prophet, ARIMA, and XGBoost on a time based holdout, produces a 52 week forecast with prediction intervals, and estimates how revenue responds to markdown spend. A Power BI dashboard is planned and not yet built.
+**How accurately can weekly revenue be forecast for 45 Walmart stores, and which model should a planner trust?**
 
-Project Goal
+## The answer
 
-Help finance and operations teams plan inventory and staffing with a forward view of store revenue and an honest range of uncertainty. Analysts can compare models per store and see whether markdown size moves revenue.
+- **Prophet is the model to use.** On the last 12 weeks of each store, held out and never seen in training, Prophet was the most accurate model in 30 of 45 stores, with a mean error (MAPE) of 4.4%. ARIMA was best in 11 stores and XGBoost in 4.
+- **A simple baseline is hard to beat.** "Same week last year" has a mean error of 5.5%. Prophet beats it in 30 stores, ARIMA in 21, and XGBoost in only 13.
+- **An earlier version of this project was wrong.** It reported XGBoost as best in 42 stores because it tested models on their own training data and used features that included the week being predicted. Both problems are fixed, and the results above come from a clean holdout.
+- **A 52 week forecast with a range.** Every store has a weekly forecast for the next year with an 80% range. On the held out weeks the range contained 93% of actual values, so it is a little wide.
+- **Markdowns show no measurable effect on revenue.** The data has no prices, so price elasticity cannot be estimated. Revenue does not move with markdown size: the estimate is 0.008 with a 95% interval of -0.001 to 0.017.
 
-Key Results
+## Data
 
-Evaluated on a time based holdout (last 12 weeks per store, models fit on earlier weeks only, features built from past weeks only). See scripts/holdout_evaluation.py and data/holdout_summary.csv.
+Kaggle competition "Walmart Recruiting - Store Sales Forecasting": 421,570 weekly records for 45 stores and their departments, February 2010 to October 2012. Fields include weekly sales, holiday weeks, temperature, fuel price, CPI, unemployment, markdowns, store type and size.
 
-• Prophet was best for 30 of 45 stores, ARIMA for 11, XGBoost for 4.
-• Mean MAPE: Prophet 4.4%, ARIMA 5.3%, XGBoost 8.0%, seasonal naive (same week last year) 5.5%.
-• Prophet beats the seasonal naive baseline in 30 of 45 stores, ARIMA in 21, XGBoost in 13.
-• An earlier version scored models on their own training data and reported XGBoost as best for 42 stores. That result was caused by in-sample scoring and by rolling features that included the week being predicted, and has been removed.
-• The SQL views in sql/ build lag and rolling features at store level.
-• Power BI dashboard: planned, not built yet.
+## How it works
 
-Technologies Used
+1. `build_cleaned.py` merges the three Kaggle files into one cleaned table.
+2. `build_sql_features.py` builds weekly store revenue, lags and rolling averages with the SQL in `sql/`, and checks them against the Python numbers. They match on all 6,435 store weeks.
+3. `prep_data.py` adds lag and rolling features from past weeks only.
+4. `holdout_evaluation.py` fits Prophet, ARIMA and XGBoost on each store's history, forecasts the last 12 weeks, and compares them with a seasonal baseline.
+5. `forecast_future.py` fits Prophet on all history and forecasts 52 weeks with an 80% range.
+6. `markdown_elasticity.py` estimates how weekly revenue responds to markdown spend, using store and week fixed effects.
+7. `scenario_simulator.py` applies that estimate to the forecast for markdowns 30% lower or higher. Both stay within about 1% of the baseline.
 
-SQL
-SQLite was used to store and prepare raw data. SQL views aggregated revenue, joined economic fields, and removed missing values before Python loaded the final tables.
+## Outputs
 
-Python
-Pandas
-NumPy
-Scikit-learn
-Prophet
-Statsmodels
-XGBoost
+| File | Contents |
+| --- | --- |
+| `data/holdout_summary.csv` | Error of each model for each store, and the best model |
+| `data/holdout_predictions.csv` | Actual and predicted revenue for the held out weeks |
+| `data/forecast_future.csv` | 52 week forecast with low and high values for each store |
+| `data/markdown_elasticity.csv` | The markdown estimate and its interval |
+| `data/scenario_markdown.csv` | Revenue under markdowns 30% lower or higher |
+| `data/store_features_sql.csv` | Weekly store revenue and features built in SQL |
 
-Python handled feature engineering, lag creation, rolling values, model training, evaluation, forecasting, and the markdown what-if.
+## Limits
 
-Power BI
-Power BI is planned for forecasts, model performance, and the markdown what-if. No dashboard file exists yet.
+- The holdout is one 12 week window that does not include the holiday peak, so accuracy in November and December is untested.
+- The markdown estimate covers November 2011 to October 2012, the only period with markdown data.
+- The data has no prices or costs, so profit, margin and price changes cannot be modeled.
+- There is no dashboard yet. The output files above are ready to load into one.
 
-Version Control
-Git and GitHub organized notebooks, scripts, and dashboard artifacts.
+## Reproduce
 
-Dataset
+Download `train.csv`, `features.csv` and `stores.csv` from the Kaggle competition into `data/raw/`, then run:
 
-Source: Kaggle Walmart Store Sales
-Records: 421,570 weekly store and department observations (Feb 2010 to Oct 2012)
-Fields included revenue, holiday flags, fuel price, consumer price index, unemployment, markdown activity, temperature, store type, and size.
+```bash
+pip install -r requirements.txt
+bash run_all.sh
+```
 
-Reproduce
+The full run takes a few minutes. `notebooks/eda.ipynb` explores the cleaned data.
 
-Download train.csv, features.csv and stores.csv from the Kaggle competition "Walmart Recruiting - Store Sales Forecasting" into data/raw/, then run:
+## Repository structure
 
-    pip install -r requirements.txt
-    bash run_all.sh
-
-SQL Pipeline
-
-The SQL pipeline loads the raw CSV into a database. SQL views handle aggregation and preparation before Python completes the model steps. The SQL folder contains the full set of queries.
-
-SQL steps
-
-Load raw CSV into walmart_raw.
-
-Create store_revenue to calculate weekly revenue per store.
-
-Create store_features to join holidays and economic values.
-
-Add lag fields and rolling averages using window functions.
-
-Export prepared tables back into Python.
-
-This approach ensures consistent data structures and gives clear visibility into transformations.
-
-Feature Engineering
-
-Python adds additional features that strengthen forecasting performance.
-Features include Lag_1, Lag_2, Lag_4, Lag_12, Rolling_4w, Rolling_12w, seasonal fields, and holiday flags. Economic fields help capture external effects.
-
-Feature engineering uses past weeks only (no leakage) and feeds the XGBoost model.
-
-Model Training
-
-Three forecasting models were implemented.
-
-Prophet
-Captures weekly and yearly seasonality. Good at holiday patterns.
-
-ARIMA
-Works on smooth data. Struggles with heavy noise. Included for comparison.
-
-XGBoost
-Uses engineered features and external variables. Handles nonlinear patterns well. Performs best across almost all stores.
-
-Each model is trained per store on store-week revenue. scripts/holdout_evaluation.py writes actual vs predicted holdout weeks for all models to data/holdout_predictions.csv for Power BI.
-
-Model Selection Engine
-
-scripts/holdout_evaluation.py scores each model with MAPE on the held out weeks and picks the best model per store. Results go to data/holdout_summary.csv for Power BI.
-
-Future Forecast
-
-scripts/forecast_future.py fits Prophet on each store and writes a 52 week forecast with 80% prediction intervals to data/forecast_future.csv. On the 12 held out weeks the 80% interval contained 92% of actual values, so the intervals are somewhat wide. The holdout does not include a peak holiday season, so coverage there is untested.
-
-Markdown Elasticity
-
-The dataset has no prices, so price elasticity cannot be estimated. scripts/markdown_elasticity.py instead estimates how weekly store revenue responds to markdown spend (Nov 2011 to Oct 2012, store and week fixed effects). The estimate is 0.008 with a 95% interval of -0.001 to 0.017, so there is no detectable effect of markdown size on revenue.
-
-Markdown What-If
-
-scripts/scenario_simulator.py applies the elasticity and its 95% interval to the 52 week forecast for markdowns 30% lower or higher. The result is within about 1% of baseline in both directions, consistent with no detectable effect. Profit and margin are not modeled because the dataset has no cost data.
-
-Power BI Dashboard
-
-The planned dashboard will include:
-
-• Actual vs forecast lines
-• Store filter
-• Model performance comparison
-• Holiday impact view
-• Economic factor trends
-• Scenario simulator
-• Best model selection table
-
-Managers will be able to review store forecasts with ranges and compare models per store.
-
-Business Impact
-
-Analysts can compare models by store, see how uncertain the forecast is, and check whether markdown spend is associated with revenue.
-
-Repository Structure
-Walmart-Revenue-Forecasting/
-│
-├── data/
-├── sql/
-├── scripts/
-├── notebooks/
-├── dashboard/
-├── reports/
-└── README.md
+```
+data/        outputs (raw Kaggle files go in data/raw/, not included)
+notebooks/   exploratory analysis
+scripts/     the pipeline, in the order of run_all.sh
+sql/         table, feature and export queries for SQLite
+run_all.sh   runs the whole pipeline
+```

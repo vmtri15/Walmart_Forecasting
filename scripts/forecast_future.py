@@ -11,6 +11,7 @@ Output:
 """
 import logging
 
+import numpy as np
 import pandas as pd
 from prophet import Prophet
 
@@ -37,6 +38,7 @@ for store, g in wk.groupby("Store"):
     # coverage check on the last HOLDOUT weeks
     n_train = len(g) - HOLDOUT
     m = fit(g["Date"][:n_train], g["Revenue"][:n_train])
+    np.random.seed(int(store))  # Prophet draws its intervals at random; a fixed seed gives the same file every run
     fc = m.predict(pd.DataFrame({"ds": g["Date"][n_train:]}))
     y_test = g["Revenue"][n_train:].to_numpy()
     inside += list((y_test >= fc["yhat_lower"].to_numpy()) & (y_test <= fc["yhat_upper"].to_numpy()))
@@ -44,6 +46,7 @@ for store, g in wk.groupby("Store"):
     # real forecast from all history
     m = fit(g["Date"], g["Revenue"])
     future = m.make_future_dataframe(periods=HORIZON, freq="W-FRI", include_history=False)
+    np.random.seed(int(store))
     fc = m.predict(future)
     rows.append(pd.DataFrame({
         "Store": store, "Date": fc["ds"], "Forecast": fc["yhat"],

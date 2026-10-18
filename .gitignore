@@ -6,3 +6,4 @@ __pycache__/
 data/raw/
 data/walmart_cleaned.csv
 data/walmart_prepared.csv
+data/walmart.db

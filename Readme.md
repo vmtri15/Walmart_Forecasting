@@ -1,4 +1,4 @@
-Walmart Revenue Forecasting
+# Walmart Revenue Forecasting
 
 This project forecasts weekly revenue for 45 Walmart stores using SQL and Python. It compares Prophet, ARIMA, and XGBoost on a time based holdout, produces a 52 week forecast with prediction intervals, and estimates how revenue responds to markdown spend. A Power BI dashboard is planned and not yet built.
 
@@ -135,4 +135,3 @@ Walmart-Revenue-Forecasting/
 ├── dashboard/
 ├── reports/
 └── README.md
-# Walmart_Forecasting

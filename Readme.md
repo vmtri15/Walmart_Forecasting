@@ -40,7 +40,7 @@ Kaggle competition "Walmart Recruiting - Store Sales Forecasting": 421,570 weekl
 - The holdout is one 12 week window that does not include the holiday peak, so accuracy in November and December is untested.
 - The markdown estimate covers November 2011 to October 2012, the only period with markdown data.
 - The data has no prices or costs, so profit, margin and price changes cannot be modeled.
-- There is no dashboard yet. The output files above are ready to load into one.
+- The Power BI dashboard is not a committed file: see `POWERBI.md` to build it from the tidy CSVs.
 
 ## Reproduce
 

@@ -5,3 +5,4 @@ python scripts/holdout_evaluation.py
 python scripts/forecast_future.py
 python scripts/markdown_elasticity.py
 python scripts/scenario_simulator.py
+python scripts/build_powerbi.py

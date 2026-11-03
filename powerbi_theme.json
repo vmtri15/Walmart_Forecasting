@@ -1,25 +1,73 @@
 {
-  "name": "Walmart Forecast",
-  "dataColors": ["#111827", "#9CA3AF", "#2563EB", "#D1D5DB", "#F59E0B", "#6B7280", "#93C5FD"],
-  "background": "#FFFFFF",
-  "foreground": "#111827",
-  "tableAccent": "#2563EB",
+  "name": "Walmart Forecast Dark",
+  "dataColors": ["#F8FAFC", "#64748B", "#3B82F6", "#94A3B8", "#F59E0B", "#475569", "#93C5FD"],
+  "background": "#111A2E",
+  "foreground": "#E2E8F0",
+  "tableAccent": "#3B82F6",
+  "good": "#22C55E",
+  "neutral": "#F59E0B",
+  "bad": "#EF4444",
+  "maximum": "#F59E0B",
+  "center": "#1E293B",
+  "minimum": "#111A2E",
   "textClasses": {
-    "title": {"fontFace": "Segoe UI Semibold", "fontSize": 13, "color": "#111827"},
-    "label": {"fontFace": "Segoe UI", "fontSize": 10, "color": "#4B5563"},
-    "callout": {"fontFace": "Segoe UI Semibold", "fontSize": 28, "color": "#111827"}
+    "title": {"fontFace": "Segoe UI Semibold", "fontSize": 13, "color": "#F8FAFC"},
+    "header": {"fontFace": "Segoe UI Semibold", "fontSize": 12, "color": "#F8FAFC"},
+    "label": {"fontFace": "Segoe UI", "fontSize": 10, "color": "#94A3B8"},
+    "callout": {"fontFace": "Segoe UI Semibold", "fontSize": 34, "color": "#F8FAFC"}
   },
   "visualStyles": {
     "*": {
       "*": {
-        "border": [{"show": true, "color": {"solid": {"color": "#E5E7EB"}}, "radius": 8}],
-        "padding": [{"top": 10, "bottom": 10, "left": 12, "right": 12}],
-        "dropShadow": [{"show": false}]
+        "background": [{"show": true, "color": {"solid": {"color": "#111A2E"}}, "transparency": 0}],
+        "border": [{"show": true, "color": {"solid": {"color": "#1E293B"}}, "radius": 10}],
+        "padding": [{"top": 12, "bottom": 12, "left": 14, "right": 14}],
+        "dropShadow": [{"show": false}],
+        "title": [{"fontColor": {"solid": {"color": "#F8FAFC"}}}],
+        "subTitle": [{"fontColor": {"solid": {"color": "#94A3B8"}}}],
+        "categoryAxis": [{"labelColor": {"solid": {"color": "#94A3B8"}}, "gridlineColor": {"solid": {"color": "#1E293B"}}}],
+        "valueAxis": [{"labelColor": {"solid": {"color": "#94A3B8"}}, "gridlineColor": {"solid": {"color": "#1E293B"}}}],
+        "legend": [{"labelColor": {"solid": {"color": "#CBD5E1"}}}],
+        "labels": [{"color": {"solid": {"color": "#E2E8F0"}}}]
       }
     },
     "page": {
       "*": {
-        "background": [{"color": {"solid": {"color": "#F3F4F6"}}, "transparency": 0}]
+        "background": [{"color": {"solid": {"color": "#0B1220"}}, "transparency": 0}],
+        "outspace": [{"color": {"solid": {"color": "#0B1220"}}}]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [{"color": {"solid": {"color": "#F8FAFC"}}, "fontSize": 34}],
+        "categoryLabels": [{"color": {"solid": {"color": "#94A3B8"}}, "fontSize": 11}],
+        "border": [{"show": true, "color": {"solid": {"color": "#3B82F6"}}, "radius": 10}]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [{"fontColor": {"solid": {"color": "#94A3B8"}}}],
+        "items": [{"fontColor": {"solid": {"color": "#F8FAFC"}}, "background": {"solid": {"color": "#1E293B"}}}]
+      }
+    },
+    "pivotTable": {
+      "*": {
+        "columnHeaders": [{"fontColor": {"solid": {"color": "#F8FAFC"}}, "backColor": {"solid": {"color": "#1E293B"}}}],
+        "rowHeaders": [{"fontColor": {"solid": {"color": "#CBD5E1"}}, "backColor": {"solid": {"color": "#111A2E"}}}],
+        "values": [{"fontColorPrimary": {"solid": {"color": "#E2E8F0"}}, "backColorPrimary": {"solid": {"color": "#111A2E"}}, "fontColorSecondary": {"solid": {"color": "#E2E8F0"}}, "backColorSecondary": {"solid": {"color": "#111A2E"}}}],
+        "total": [{"fontColor": {"solid": {"color": "#F8FAFC"}}, "backColor": {"solid": {"color": "#1E293B"}}}]
+      }
+    },
+    "textbox": {
+      "*": {
+        "background": [{"show": false}],
+        "border": [{"show": false}]
+      }
+    },
+    "actionButton": {
+      "*": {
+        "fill": [{"show": true, "fillColor": {"solid": {"color": "#1E293B"}}}],
+        "text": [{"show": true, "fontColor": {"solid": {"color": "#E2E8F0"}}}]
       }
     }
   }

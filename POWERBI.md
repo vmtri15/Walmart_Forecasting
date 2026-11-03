@@ -12,4 +12,4 @@ Create a `Stores` table (`Stores = DISTINCT(ModelError[Store])`) and relate it t
 | Forecast | Line + band | Series = Forecast; Values `Value`, `Low`, `High` (Min/Max) |
 | Markdown | Line | Series in Forecast, markdown_minus30, markdown_plus30 |
 
-Built in Power BI on the web as the **Walmart Forecast** report (My workspace > Walmart), pages Models, Holdout, Forecast, Markdown. Win is a Power Query column: `if [Model] = [Best_Model] then 1 else 0`. To refresh, rerun the script and re-upload `powerbi.xlsx`.
+Built in Power BI on the web as the **Walmart Forecast** report (My workspace > Walmart), pages Models, Holdout, Forecast, Markdown. Win is a Power Query column: `if [Model] = [Best_Model] then 1 else 0`. To refresh, rerun the script and re-upload `powerbi.xlsx`. Colors and card borders come from `powerbi_theme.json` (Design > Import theme); the store and store-type drop-downs are synced across the Holdout, Forecast and Markdown pages. The model has two DAX measures, `Actual revenue` (Series = History) and `Forecast revenue` (Series = Forecast); the Forecast page draws the 80% range as error bars (band) on `Forecast revenue` with `High`/`Low` as bounds.

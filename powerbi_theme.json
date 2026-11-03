@@ -1,0 +1,26 @@
+{
+  "name": "Walmart Forecast",
+  "dataColors": ["#111827", "#9CA3AF", "#2563EB", "#D1D5DB", "#F59E0B", "#6B7280", "#93C5FD"],
+  "background": "#FFFFFF",
+  "foreground": "#111827",
+  "tableAccent": "#2563EB",
+  "textClasses": {
+    "title": {"fontFace": "Segoe UI Semibold", "fontSize": 13, "color": "#111827"},
+    "label": {"fontFace": "Segoe UI", "fontSize": 10, "color": "#4B5563"},
+    "callout": {"fontFace": "Segoe UI Semibold", "fontSize": 28, "color": "#111827"}
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "border": [{"show": true, "color": {"solid": {"color": "#E5E7EB"}}, "radius": 8}],
+        "padding": [{"top": 10, "bottom": 10, "left": 12, "right": 12}],
+        "dropShadow": [{"show": false}]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#F3F4F6"}}, "transparency": 0}]
+      }
+    }
+  }
+}

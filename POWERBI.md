@@ -16,12 +16,12 @@ Built in Power BI on the web as the **Walmart Forecast** report (My workspace > 
 
 Formats live in the semantic model (errors as %, revenue as currency, markdown effect to 3 decimals), so cards, tables and hover tooltips all pick them up. The Models page has an error-by-store matrix (shaded: darker = worse) and a store-type drop-down; the Forecast page has a dashed constant line at 2012-11-02 where the forecast starts. Each page has a phone layout (Optimize page for mobile).
 
-## One-click refresh (not set up yet)
+## Refreshing the data
 
-The model currently reads a copy Power BI made at upload (`Apps/Microsoft Power Query/Uploaded Files/powerbi 1.xlsx`), which OneDrive does not let you replace. To make refresh one click:
+All three queries read `My files/powerbi.xlsx` in OneDrive (`https://purdue0-my.sharepoint.com/personal/vit_purdue_edu/Documents/powerbi.xlsx`). To update the report:
 
-1. Upload `data/powerbi.xlsx` to a normal OneDrive folder, e.g. `Documents/Walmart/`.
-2. In the semantic model: Transform data > each query's Source step > Link to file > Browse OneDrive > pick that file.
-3. Afterwards, rerun `python scripts/build_powerbi.py`, upload the new file over the old one, and click Refresh.
+1. Run `python scripts/build_powerbi.py` (or `bash run_all.sh`).
+2. Upload the new `data/powerbi.xlsx` to OneDrive My files, replacing the old one (keep the name).
+3. In Power BI, open the Walmart Forecast semantic model and click Refresh.
 
 Saved slicer selections persist: clear the Store drop-down before saving or the report opens filtered to one store.
